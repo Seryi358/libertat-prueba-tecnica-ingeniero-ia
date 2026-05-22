@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Libertat{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Historial de constancias</h1>
+  <p>Seguimiento de registros, puntajes, estados y constancias emitidas.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Tema</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th>Puntaje</th>
+        <th>Constancia</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for registro in registros %}
+      <tr>
+        <td>{{ registro["nombre"] }}</td>
+        <td>{{ registro["email"] }}</td>
+        <td>{{ registro["tema_webinar"] }}</td>
+        <td>{{ registro["fecha_asistencia"] }}</td>
+        <td><span class="status {{ registro['estado'] }}">{{ registro["estado"] }}</span></td>
+        <td>{{ "%.0f"|format(registro["puntaje"] or 0) }}%</td>
+        <td>
+          {% if registro["constancia_path"] %}
+            {% set filename = registro["constancia_path"].split("/")[-1] %}
+            <a href="/constancias/{{ filename }}">PDF</a>
+          {% else %}
+            Pendiente
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7">Aun no hay registros.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

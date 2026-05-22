@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Resultado · Libertat{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Resultado del aprendizaje</h1>
+  <p><strong>{{ registro["nombre"] }}</strong> obtuvo un puntaje de <strong>{{ "%.0f"|format(registro["puntaje"] or 0) }}%</strong>.</p>
+  <p>
+    <span class="status {{ registro['estado'] }}">{{ registro["estado"]|upper }}</span>
+  </p>
+  {% if registro["constancia_path"] %}
+    {% set filename = registro["constancia_path"].split("/")[-1] %}
+    <p>La constancia digital fue generada correctamente.</p>
+    <a class="button" href="/constancias/{{ filename }}">Descargar constancia</a>
+  {% else %}
+    <p>El usuario recibe retroalimentacion y puede repetir el proceso de aprendizaje.</p>
+  {% endif %}
+</section>
+{% endblock %}

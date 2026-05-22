@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Registro webinar · Libertat{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>Registro de webinar financiero</h1>
+    <p>
+      Flujo operativo para capturar asistentes, generar un resumen educativo,
+      evaluar aprendizaje, notificar resultados y emitir constancias digitales.
+    </p>
+  </div>
+  <div class="panel">
+    <h2>Nuevo registro</h2>
+    <form method="post" action="/registros">
+      <label>Nombre completo
+        <input name="nombre" autocomplete="name" required minlength="2" value="Sergio Alejandro Castellanos">
+      </label>
+      <label>Email
+        <input name="email" type="email" autocomplete="email" required value="scastellanos@phinodia.com">
+      </label>
+      <label>Tema del webinar
+        <input name="tema_webinar" required minlength="4" value="Manejo responsable del endeudamiento">
+      </label>
+      <label>Fecha de asistencia
+        <input name="fecha_asistencia" type="date" required value="2026-05-22">
+      </label>
+      <button class="button" type="submit">Crear quiz</button>
+    </form>
+  </div>
+</section>
+{% endblock %}
