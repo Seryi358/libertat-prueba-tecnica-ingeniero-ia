@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Quiz · Libertat{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Quiz del webinar</h1>
+  <p><strong>{{ registro["nombre"] }}</strong> · {{ registro["tema_webinar"] }} · {{ registro["fecha_asistencia"] }}</p>
+  <div class="summary">
+    <h3>Resumen personalizado</h3>
+    <p>{{ registro["resumen"] }}</p>
+  </div>
+  <form method="post" action="/quiz/{{ registro['id'] }}">
+    {% for pregunta in contenido.quiz %}
+      {% set question_index = loop.index0 %}
+      <fieldset class="question">
+        <legend><strong>{{ loop.index }}. {{ pregunta.pregunta }}</strong></legend>
+        <div class="options">
+          {% for opcion in pregunta.opciones %}
+            <label class="option">
+              <input type="radio" name="respuesta_{{ question_index }}" value="{{ loop.index0 }}" required>
+              <span>{{ opcion }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+    {% endfor %}
+    <button class="button" type="submit">Enviar respuestas</button>
+  </form>
+</section>
+{% endblock %}

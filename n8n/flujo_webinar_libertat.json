@@ -1,0 +1,72 @@
+{
+  "name": "Libertat - Webinar educativo",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "webinar-libertat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-registro",
+      "name": "Webhook registro",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/api/registros",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={{ JSON.stringify($json.body) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "crear-registro",
+      "name": "Crear registro en plataforma Python",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}"
+      },
+      "id": "responder",
+      "name": "Responder",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [800, 300]
+    }
+  ],
+  "connections": {
+    "Webhook registro": {
+      "main": [
+        [
+          {
+            "node": "Crear registro en plataforma Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear registro en plataforma Python": {
+      "main": [
+        [
+          {
+            "node": "Responder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
