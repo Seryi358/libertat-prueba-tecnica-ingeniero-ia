@@ -16,12 +16,13 @@ Crear un servicio tipo **App** con estos valores:
 - Build: Dockerfile del repositorio.
 - Proxy port: `8000`
 - Healthcheck: `/health`
+- URL desplegada: `https://n8n-libertat-webinar.zb12wf.easypanel.host`
 
 Variables de entorno recomendadas:
 
 ```env
 APP_ENV=production
-APP_BASE_URL=https://TU-DOMINIO
+APP_BASE_URL=https://n8n-libertat-webinar.zb12wf.easypanel.host
 DATABASE_PATH=data/libertat_webinar.sqlite3
 OLLAMA_ENABLED=false
 SMTP_ENABLED=false
@@ -43,11 +44,10 @@ Crear n8n desde el template oficial de Easypanel. Despues importar el archivo:
 n8n/flujo_webinar_libertat.json
 ```
 
-En el nodo HTTP Request del flujo, reemplazar la URL local por la URL publica de
-la app:
+El nodo HTTP Request del flujo apunta a la URL publica de la app:
 
 ```text
-https://TU-DOMINIO/api/registros
+https://n8n-libertat-webinar.zb12wf.easypanel.host/api/registros
 ```
 
 Activar el workflow y probar el webhook con este payload:
@@ -65,9 +65,9 @@ La respuesta esperada contiene `id`, `estado` y `quiz_url`.
 
 ## Verificacion post-despliegue
 
-1. Abrir `https://TU-DOMINIO/health`; debe responder `{"status":"ok"}`.
-2. Abrir `https://TU-DOMINIO/` y crear un registro.
+1. Abrir `https://n8n-libertat-webinar.zb12wf.easypanel.host/health`; debe responder `{"status":"ok"}`.
+2. Abrir `https://n8n-libertat-webinar.zb12wf.easypanel.host/` y crear un registro.
 3. Responder el quiz con las opciones 1, 2 y 3 respectivamente.
 4. Confirmar resultado aprobado y descarga de constancia.
-5. Abrir `https://TU-DOMINIO/dashboard` y revisar el historial.
+5. Abrir `https://n8n-libertat-webinar.zb12wf.easypanel.host/dashboard` y revisar el historial.
 6. Probar el webhook n8n y verificar que cree un registro nuevo.

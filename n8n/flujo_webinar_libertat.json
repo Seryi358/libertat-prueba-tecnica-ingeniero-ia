@@ -16,7 +16,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://host.docker.internal:8000/api/registros",
+        "url": "https://n8n-libertat-webinar.zb12wf.easypanel.host/api/registros",
         "sendBody": true,
         "contentType": "json",
         "jsonBody": "={{ JSON.stringify($json.body) }}",
