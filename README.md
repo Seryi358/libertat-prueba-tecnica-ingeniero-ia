@@ -90,6 +90,12 @@ Payload esperado:
 }
 ```
 
+## Despliegue en Easypanel
+
+La guia de despliegue esta en `docs/despliegue_easypanel.md`. La configuracion clave
+es crear un servicio App desde GitHub, usar el Dockerfile del repositorio, publicar
+el proxy port `8000` y montar `/app/data` como volumen persistente.
+
 ## Exportacion HubSpot
 
 La seccion Python/API tambien queda cubierta con `scripts/export_hubspot_contacts.py`.

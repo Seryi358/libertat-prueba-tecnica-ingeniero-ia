@@ -1,0 +1,12 @@
+.git
+.venv
+.pytest_cache
+__pycache__
+*.pyc
+.DS_Store
+.env
+data
+docs/evidencias
+PruebaTecnica_IngenieroIA_Libertat_original.pdf
+.server.log
+.server.pid
