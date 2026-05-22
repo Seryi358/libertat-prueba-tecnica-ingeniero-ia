@@ -3,8 +3,10 @@
   "nodes": [
     {
       "parameters": {
+        "httpMethod": "POST",
         "path": "webinar-libertat",
-        "responseMode": "responseNode",
+        "responseMode": "lastNode",
+        "responseData": "firstEntryJson",
         "options": {}
       },
       "id": "webhook-registro",
@@ -19,6 +21,7 @@
         "url": "https://n8n-libertat-webinar.zb12wf.easypanel.host/api/registros",
         "sendBody": true,
         "contentType": "json",
+        "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.body) }}",
         "options": {
           "timeout": 30000
@@ -29,17 +32,6 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [520, 300]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ $json }}"
-      },
-      "id": "responder",
-      "name": "Responder",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [800, 300]
     }
   ],
   "connections": {
@@ -48,17 +40,6 @@
         [
           {
             "node": "Crear registro en plataforma Python",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Crear registro en plataforma Python": {
-      "main": [
-        [
-          {
-            "node": "Responder",
             "type": "main",
             "index": 0
           }

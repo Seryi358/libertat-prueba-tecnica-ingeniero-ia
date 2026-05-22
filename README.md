@@ -79,6 +79,12 @@ Importa `n8n/flujo_webinar_libertat.json` en n8n. El flujo expone un webhook,
 envia el payload a la API Python y responde con el identificador del registro y la
 URL del quiz.
 
+Webhook de produccion:
+
+```text
+https://n8n-n8n.zb12wf.easypanel.host/webhook/webinar-libertat
+```
+
 Payload esperado:
 
 ```json

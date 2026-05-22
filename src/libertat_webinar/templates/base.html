@@ -24,9 +24,9 @@
       background: linear-gradient(180deg, #eef6f4 0%, #ffffff 34%);
     }
     header {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr);
       align-items: center;
-      justify-content: space-between;
       gap: 24px;
       padding: 18px clamp(20px, 4vw, 56px);
       border-bottom: 1px solid var(--line);
@@ -41,7 +41,19 @@
       color: var(--brand-dark);
       font-size: 1.1rem;
     }
-    nav { display: flex; gap: 10px; flex-wrap: wrap; }
+    .brand-logo {
+      display: block;
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+    nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
     nav a, .button {
       appearance: none;
       border: 1px solid var(--brand);
@@ -148,7 +160,12 @@
     }
     .status.reprobado { background: #fff1ef; color: #9d2d21; }
     @media (max-width: 760px) {
-      header { align-items: flex-start; flex-direction: column; }
+      header {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+      }
+      nav { justify-content: center; }
       .hero { grid-template-columns: 1fr; }
       table { display: block; overflow-x: auto; }
     }
@@ -157,6 +174,7 @@
 <body>
   <header>
     <div class="brand">Libertat · Automatizacion educativa</div>
+    <img class="brand-logo" src="/static/libertat-logo.jpeg" alt="Libertat">
     <nav>
       <a href="/" class="secondary">Registro</a>
       <a href="/dashboard">Dashboard</a>

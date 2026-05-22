@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from . import db
@@ -32,6 +33,7 @@ app = FastAPI(
     description="Flujo educativo con registro, quiz, notificacion y constancia.",
     lifespan=lifespan,
 )
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
 
 @app.get("/health")

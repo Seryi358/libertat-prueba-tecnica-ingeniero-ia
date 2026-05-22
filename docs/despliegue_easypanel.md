@@ -52,6 +52,10 @@ https://n8n-libertat-webinar.zb12wf.easypanel.host/api/registros
 
 Activar el workflow y probar el webhook con este payload:
 
+```text
+https://n8n-n8n.zb12wf.easypanel.host/webhook/webinar-libertat
+```
+
 ```json
 {
   "nombre": "Sergio Alejandro Castellanos",
