@@ -58,8 +58,69 @@ def _extract_json(text: str) -> dict:
     return json.loads(match.group(0))
 
 
+def _response_text(payload: dict) -> str:
+    if isinstance(payload.get("output_text"), str):
+        return payload["output_text"]
+
+    text_parts: list[str] = []
+    for item in payload.get("output", []):
+        for content in item.get("content", []):
+            text = content.get("text")
+            if isinstance(text, str):
+                text_parts.append(text)
+    return "".join(text_parts)
+
+
+def _generate_with_model_api(topic: str) -> GeneratedContent:
+    prompt = (
+        "Genera contenido educativo financiero en espanol para un webinar. "
+        "Devuelve exclusivamente JSON valido con esta forma: "
+        '{"resumen":"maximo 200 palabras","quiz":[{"pregunta":"...","opciones":["...","...","..."],'
+        '"respuesta_correcta":0}]}. '
+        "El quiz debe tener exactamente 3 preguntas de seleccion unica, cada una con 3 opciones. "
+        "Las respuestas_correctas deben ser indices base cero. "
+        f"Tema: {topic}"
+    )
+    payload = json.dumps(
+        {
+            "model": settings.model_api_model,
+            "input": prompt,
+            "text": {"format": {"type": "json_object"}},
+            "max_output_tokens": 900,
+        }
+    ).encode("utf-8")
+    request = urllib.request.Request(
+        settings.model_api_url,
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {settings.model_api_key}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=45) as response:
+        raw = json.loads(response.read().decode("utf-8"))
+
+    parsed = _extract_json(_response_text(raw))
+    content = GeneratedContent.model_validate(parsed)
+    if len(content.resumen.split()) > 200:
+        raise ValueError("El resumen excede 200 palabras.")
+    return content
+
+
 def generate_content(topic: str) -> GeneratedContent:
-    """Genera resumen y quiz; usa Ollama si esta habilitado y cae a demo local si falla."""
+    """Genera resumen y quiz; usa un proveedor configurado y cae a demo local si falla."""
+    if (
+        settings.model_api_enabled
+        and settings.model_api_url
+        and settings.model_api_key
+        and settings.model_api_model
+    ):
+        try:
+            return _generate_with_model_api(topic)
+        except (OSError, urllib.error.URLError, TimeoutError, ValueError, json.JSONDecodeError):
+            pass
+
     if not settings.ollama_enabled:
         return _fallback_content(topic)
 

@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import urllib.error
+import urllib.parse
+import urllib.request
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -13,6 +16,64 @@ from .schemas import GeneratedContent, RegistrationInput
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _supabase_headers(prefer: str | None = None) -> dict[str, str]:
+    headers = {
+        "apikey": settings.supabase_service_key,
+        "Authorization": f"Bearer {settings.supabase_service_key}",
+        "Content-Type": "application/json",
+    }
+    if prefer:
+        headers["Prefer"] = prefer
+    return headers
+
+
+def _supabase_enabled() -> bool:
+    return bool(
+        settings.supabase_sync_enabled
+        and settings.supabase_url
+        and settings.supabase_service_key
+    )
+
+
+def _post_supabase(table: str, payload: dict, *, on_conflict: str | None = None) -> None:
+    if not _supabase_enabled():
+        return
+
+    query = f"?on_conflict={urllib.parse.quote(on_conflict)}" if on_conflict else ""
+    request = urllib.request.Request(
+        f"{settings.supabase_url}/rest/v1/{table}{query}",
+        data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+        headers=_supabase_headers("resolution=merge-duplicates,return=minimal"),
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=15):
+            return
+    except (OSError, urllib.error.URLError, urllib.error.HTTPError):
+        return
+
+
+def _patch_supabase(table: str, filters: dict[str, str], payload: dict) -> None:
+    if not _supabase_enabled():
+        return
+
+    query = "&".join(
+        f"{urllib.parse.quote(key)}=eq.{urllib.parse.quote(value)}"
+        for key, value in filters.items()
+    )
+    request = urllib.request.Request(
+        f"{settings.supabase_url}/rest/v1/{table}?{query}",
+        data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+        headers=_supabase_headers("return=minimal"),
+        method="PATCH",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=15):
+            return
+    except (OSError, urllib.error.URLError, urllib.error.HTTPError):
+        return
 
 
 @contextmanager
@@ -71,6 +132,7 @@ def init_db() -> None:
 
 
 def create_registration(registration_id: str, data: RegistrationInput, content: GeneratedContent) -> None:
+    created_at = _now_iso()
     with connect() as conn:
         conn.execute(
             """
@@ -88,10 +150,29 @@ def create_registration(registration_id: str, data: RegistrationInput, content: 
                 data.fecha_asistencia.isoformat(),
                 content.resumen,
                 content.model_dump_json(),
-                _now_iso(),
-                _now_iso(),
+                created_at,
+                created_at,
             ),
         )
+    _post_supabase(
+        "registros",
+        {
+            "id": registration_id,
+            "nombre": data.nombre,
+            "email": str(data.email),
+            "telefono": data.telefono,
+            "tema_webinar": data.tema_webinar,
+            "fecha_asistencia": data.fecha_asistencia.isoformat(),
+            "resumen": content.resumen,
+            "quiz_json": content.model_dump(mode="json"),
+            "estado": "pendiente",
+            "puntaje": None,
+            "constancia_path": None,
+            "created_at": created_at,
+            "updated_at": created_at,
+        },
+        on_conflict="id",
+    )
 
 
 def get_registration(registration_id: str) -> sqlite3.Row | None:
@@ -113,6 +194,7 @@ def content_from_row(row: sqlite3.Row) -> GeneratedContent:
 
 
 def update_result(registration_id: str, status: str, score: float, certificate_path: Path | None) -> None:
+    updated_at = _now_iso()
     with connect() as conn:
         conn.execute(
             """
@@ -124,10 +206,20 @@ def update_result(registration_id: str, status: str, score: float, certificate_p
                 status,
                 score,
                 str(certificate_path) if certificate_path else None,
-                _now_iso(),
+                updated_at,
                 registration_id,
             ),
         )
+    _patch_supabase(
+        "registros",
+        {"id": registration_id},
+        {
+            "estado": status,
+            "puntaje": score,
+            "constancia_path": str(certificate_path) if certificate_path else None,
+            "updated_at": updated_at,
+        },
+    )
 
 
 def log_notification(
@@ -137,11 +229,23 @@ def log_notification(
     status: str,
     detail: str | None = None,
 ) -> None:
+    created_at = _now_iso()
     with connect() as conn:
         conn.execute(
             """
             INSERT INTO notificaciones (registro_id, canal, destino, estado, detalle, created_at)
             VALUES (?, ?, ?, ?, ?, ?)
             """,
-            (registration_id, channel, destination, status, detail, _now_iso()),
+            (registration_id, channel, destination, status, detail, created_at),
         )
+    _post_supabase(
+        "notificaciones",
+        {
+            "registro_id": registration_id,
+            "canal": channel,
+            "destino": destination,
+            "estado": status,
+            "detalle": detail,
+            "created_at": created_at,
+        },
+    )

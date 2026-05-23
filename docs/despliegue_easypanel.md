@@ -25,6 +25,8 @@ APP_ENV=production
 APP_BASE_URL=https://n8n-libertat-webinar.zb12wf.easypanel.host
 DATABASE_PATH=data/libertat_webinar.sqlite3
 OLLAMA_ENABLED=false
+MODEL_API_ENABLED=false
+SUPABASE_SYNC_ENABLED=false
 NOTIFICATION_CHANNELS=email
 SMTP_ENABLED=false
 SMTP_FROM=educacion@libertat.local
@@ -36,6 +38,33 @@ Mount persistente recomendado:
 - Mount path: `/app/data`
 
 Esto conserva SQLite, constancias PDF y outbox local entre reinicios.
+
+## Supabase opcional
+
+Si se quiere replicar la base a Supabase, ejecutar primero
+`docs/supabase_schema.sql` en el SQL Editor del proyecto. Despues configurar:
+
+```env
+SUPABASE_SYNC_ENABLED=true
+SUPABASE_URL=https://project-ref.supabase.co
+SUPABASE_SERVICE_KEY=clave_server_side
+```
+
+Los datos se sincronizan a `registros` y `notificaciones`; SQLite se mantiene
+como respaldo local del despliegue.
+
+## Modelo activo opcional
+
+Para generacion activa por API de modelo, configurar:
+
+```env
+MODEL_API_ENABLED=true
+MODEL_API_URL=https://api.example.com/v1/responses
+MODEL_API_KEY=clave_privada
+MODEL_API_MODEL=modelo-compatible
+```
+
+Si el proveedor falla, la aplicacion mantiene el generador local de respaldo.
 
 ## Servicio n8n
 

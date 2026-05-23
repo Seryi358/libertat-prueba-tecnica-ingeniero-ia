@@ -27,7 +27,7 @@ Cobertura:
 
 | Requisito | Estado | Evidencia |
 | --- | --- | --- |
-| Integrar al menos 3 herramientas | Cubierto | n8n, Python/FastAPI, LLM configurable por Ollama, comunicacion por email/Slack/WhatsApp |
+| Integrar al menos 3 herramientas | Cubierto | n8n, Python/FastAPI, LLM configurable por API u Ollama, comunicacion por email/Slack/WhatsApp |
 | Trigger de entrada por webhook o formulario | Cubierto | `/`, `/api/registros`, workflow `n8n/flujo_webinar_libertat.json` |
 | Capturar nombre, email, tema y fecha | Cubierto | `src/libertat_webinar/schemas.py` y formulario web |
 | Generar resumen maximo 200 palabras y quiz de 3 preguntas | Cubierto | `src/libertat_webinar/llm.py` |
@@ -36,7 +36,7 @@ Cobertura:
 | Mensaje personalizado con nombre del usuario | Cubierto | `src/libertat_webinar/notifier.py` |
 | Generar constancia para aprobados | Cubierto | `src/libertat_webinar/certificates.py` |
 | Variables de entorno para credenciales | Cubierto | `.env.example` y `src/libertat_webinar/config.py` |
-| Manejo basico de errores en integraciones | Cubierto | LLM con fallback, notificaciones con outbox local, HubSpot con manejo HTTP |
+| Manejo basico de errores en integraciones | Cubierto | LLM con fallback, notificaciones con outbox local, Supabase best-effort, HubSpot con manejo HTTP |
 | README con configuracion y ejecucion local | Cubierto | `README.md` |
 | Al menos un test unitario de evaluacion | Cubierto | `tests/test_quiz.py` |
 
@@ -44,7 +44,7 @@ Cobertura:
 
 | Bonus | Estado | Evidencia |
 | --- | --- | --- |
-| Guardar resultados en base de datos | Cubierto | SQLite en `src/libertat_webinar/db.py` |
+| Guardar resultados en base de datos | Cubierto | SQLite persistente y sincronizacion opcional a Supabase en `src/libertat_webinar/db.py` |
 | Dashboard de historial | Cubierto | `/dashboard` y `src/libertat_webinar/templates/dashboard.html` |
 | Despliegue cloud | Cubierto | Easypanel: `https://n8n-libertat-webinar.zb12wf.easypanel.host` |
 
@@ -61,6 +61,8 @@ Las evidencias visuales estan en `docs/evidencias/`:
 
 Ademas, el despliegue quedo validado con envio real por Gmail API y Evolution API
 para WhatsApp, y el workflow `Libertat - Webinar educativo` esta activo en n8n.
+La base principal es SQLite persistente y se incluye esquema Supabase para
+replicacion cloud.
 
 ## Verificacion recomendada
 
@@ -70,6 +72,10 @@ python -m py_compile $(rg --files -g '*.py')
 python -m json.tool n8n/flujo_webinar_libertat.json >/dev/null
 python scripts/demo_run.py
 ```
+
+Para activar Supabase, ejecutar `docs/supabase_schema.sql` en el SQL Editor y
+configurar `SUPABASE_SYNC_ENABLED=true`, `SUPABASE_URL` y
+`SUPABASE_SERVICE_KEY`.
 
 Para validar notificaciones reales, configurar uno o mas canales:
 

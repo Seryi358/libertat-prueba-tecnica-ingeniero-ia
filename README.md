@@ -65,6 +65,10 @@ codigo fuente.
 | Variable | Uso |
 | --- | --- |
 | `DATABASE_PATH` | Ruta del archivo SQLite |
+| `SUPABASE_SYNC_ENABLED` | Activa sincronizacion hacia Supabase si vale `true` |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_KEY` | Proyecto y clave server-side de Supabase |
+| `MODEL_API_ENABLED` | Activa generacion con API de modelo si vale `true` |
+| `MODEL_API_URL` / `MODEL_API_KEY` / `MODEL_API_MODEL` | Endpoint, clave y modelo para generacion activa |
 | `OLLAMA_ENABLED` | Activa generacion con Ollama si vale `true` |
 | `OLLAMA_URL` | URL local de Ollama |
 | `OLLAMA_MODEL` | Modelo local a usar |
@@ -82,6 +86,43 @@ codigo fuente.
 | `WHATSAPP_GRAPH_API_VERSION` | Version de Graph API para WhatsApp Cloud API |
 | `WHATSAPP_PHONE_NUMBER_ID` / `WHATSAPP_ACCESS_TOKEN` | Credenciales WhatsApp Cloud API |
 | `WHATSAPP_DEFAULT_TO` | Destino WhatsApp de prueba si el registro no trae telefono |
+
+## Base de datos y Supabase
+
+La aplicacion usa SQLite como base principal local y persistente. En despliegue,
+el archivo debe vivir en un volumen montado en `/app/data`, por ejemplo con
+`DATABASE_PATH=data/libertat_webinar.sqlite3`.
+
+Tambien puede sincronizar registros y notificaciones hacia Supabase. Primero
+ejecuta el esquema `docs/supabase_schema.sql` en el SQL Editor del proyecto.
+Luego configura:
+
+```env
+SUPABASE_SYNC_ENABLED=true
+SUPABASE_URL=https://project-ref.supabase.co
+SUPABASE_SERVICE_KEY=clave_server_side
+```
+
+Para copiar datos ya existentes desde SQLite hacia Supabase:
+
+```bash
+SUPABASE_URL=... SUPABASE_SERVICE_KEY=... python scripts/sync_sqlite_to_supabase.py
+```
+
+En Supabase los datos quedan en las tablas `registros` y `notificaciones`.
+
+## Generacion activa con modelo
+
+Si `MODEL_API_ENABLED=true`, la aplicacion usa una API de modelo compatible con
+Responses para generar el resumen y el quiz. Si la llamada falla, conserva el
+fallback local para que el flujo no se rompa.
+
+```env
+MODEL_API_ENABLED=true
+MODEL_API_URL=https://api.example.com/v1/responses
+MODEL_API_KEY=clave_privada
+MODEL_API_MODEL=modelo-compatible
+```
 
 ## Notificaciones
 

@@ -46,6 +46,13 @@ class Settings:
     whatsapp_phone_number_id: str
     whatsapp_access_token: str
     whatsapp_default_to: str
+    supabase_sync_enabled: bool = False
+    supabase_url: str = ""
+    supabase_service_key: str = ""
+    model_api_enabled: bool = False
+    model_api_url: str = ""
+    model_api_key: str = ""
+    model_api_model: str = ""
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -76,6 +83,13 @@ class Settings:
             whatsapp_phone_number_id=os.getenv("WHATSAPP_PHONE_NUMBER_ID", ""),
             whatsapp_access_token=os.getenv("WHATSAPP_ACCESS_TOKEN", ""),
             whatsapp_default_to=os.getenv("WHATSAPP_DEFAULT_TO", ""),
+            supabase_sync_enabled=_as_bool(os.getenv("SUPABASE_SYNC_ENABLED"), False),
+            supabase_url=os.getenv("SUPABASE_URL", "").rstrip("/"),
+            supabase_service_key=os.getenv("SUPABASE_SERVICE_KEY", ""),
+            model_api_enabled=_as_bool(os.getenv("MODEL_API_ENABLED"), False),
+            model_api_url=os.getenv("MODEL_API_URL", "").rstrip("/"),
+            model_api_key=os.getenv("MODEL_API_KEY", ""),
+            model_api_model=os.getenv("MODEL_API_MODEL", ""),
         )
 
 
