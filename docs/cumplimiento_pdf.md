@@ -48,6 +48,20 @@ Cobertura:
 | Dashboard de historial | Cubierto | `/dashboard` y `src/libertat_webinar/templates/dashboard.html` |
 | Despliegue cloud | Cubierto | Easypanel: `https://n8n-libertat-webinar.zb12wf.easypanel.host` |
 
+## Evidencias de funcionamiento
+
+Las evidencias visuales estan en `docs/evidencias/`:
+
+- `01_formulario.png`: formulario de registro desplegado.
+- `02_quiz.png`: resumen y quiz de 3 preguntas.
+- `03_resultado.png`: resultado aprobado y acceso a constancia.
+- `04_dashboard.png`: dashboard con historial de registros.
+- `demo_funcionamiento.webm`: recorrido grabado del flujo completo.
+- `constancia_demo.pdf`: constancia generada para un usuario aprobado.
+
+Ademas, el despliegue quedo validado con envio real por Gmail API y Evolution API
+para WhatsApp, y el workflow `Libertat - Webinar educativo` esta activo en n8n.
+
 ## Verificacion recomendada
 
 ```bash

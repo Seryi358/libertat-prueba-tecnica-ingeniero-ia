@@ -227,6 +227,8 @@ Las capturas de funcionamiento se encuentran en `docs/evidencias/`:
 - `02_quiz.png`
 - `03_resultado.png`
 - `04_dashboard.png`
+- `demo_funcionamiento.webm`
+- `constancia_demo.pdf`
 
 La seccion escrita esta respondida en `docs/PruebaTecnica_IngenieroIA_Libertat_respondida.pdf`.
 
