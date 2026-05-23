@@ -72,8 +72,12 @@ codigo fuente.
 | `SMTP_HOST` / `SMTP_PORT` | Servidor SMTP |
 | `SMTP_USER` / `SMTP_PASSWORD` | Credenciales SMTP |
 | `SMTP_FROM` | Remitente |
+| `GMAIL_CLIENT_ID` / `GMAIL_CLIENT_SECRET` | Cliente OAuth para Gmail API |
+| `GMAIL_REFRESH_TOKEN` | Token OAuth offline para enviar por Gmail API |
+| `GMAIL_FROM` | Remitente autorizado por Gmail API |
 | `NOTIFICATION_CHANNELS` | Canales separados por coma: `email`, `slack`, `whatsapp` |
 | `SLACK_WEBHOOK_URL` | Incoming Webhook para Slack |
+| `EVOLUTION_API_URL` / `EVOLUTION_API_KEY` / `EVOLUTION_INSTANCE` | Credenciales Evolution API |
 | `WHATSAPP_WEBHOOK_URL` | Webhook de proveedor WhatsApp, por ejemplo Kapso |
 | `WHATSAPP_GRAPH_API_VERSION` | Version de Graph API para WhatsApp Cloud API |
 | `WHATSAPP_PHONE_NUMBER_ID` / `WHATSAPP_ACCESS_TOKEN` | Credenciales WhatsApp Cloud API |
@@ -96,6 +100,28 @@ SMTP_PASSWORD=clave
 SMTP_FROM=educacion@libertat.co
 ```
 
+Tambien puede enviarse por Gmail API. Primero se obtiene la URL de autorizacion:
+
+```bash
+GMAIL_CLIENT_ID=... python scripts/gmail_oauth_setup.py url
+```
+
+Despues de autorizar, intercambiar el codigo recibido:
+
+```bash
+GMAIL_CLIENT_ID=... GMAIL_CLIENT_SECRET=... GMAIL_AUTH_CODE=... python scripts/gmail_oauth_setup.py exchange
+```
+
+Con el refresh token resultante:
+
+```env
+NOTIFICATION_CHANNELS=email
+GMAIL_CLIENT_ID=...
+GMAIL_CLIENT_SECRET=...
+GMAIL_REFRESH_TOKEN=...
+GMAIL_FROM=correo_autorizado@gmail.com
+```
+
 Para Slack:
 
 ```env
@@ -108,6 +134,15 @@ Para WhatsApp con webhook de proveedor:
 ```env
 NOTIFICATION_CHANNELS=email,whatsapp
 WHATSAPP_WEBHOOK_URL=https://proveedor.example.com/webhook
+```
+
+Para WhatsApp con Evolution API:
+
+```env
+NOTIFICATION_CHANNELS=email,whatsapp
+EVOLUTION_API_URL=https://evolution.example.com
+EVOLUTION_API_KEY=apikey
+EVOLUTION_INSTANCE=nombre_instancia
 ```
 
 Para WhatsApp Cloud API:

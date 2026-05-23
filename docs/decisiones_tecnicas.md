@@ -15,8 +15,9 @@ operativo y trazabilidad tecnica.
   esta configurado. En modo demo usa un generador deterministico para permitir pruebas
   sin credenciales.
 - El resultado se notifica por los canales configurados: email, Slack y/o WhatsApp.
-  En local se crean evidencias en `data/outbox`; en produccion se activan SMTP,
-  Slack Incoming Webhook, un webhook WhatsApp/Kapso o WhatsApp Cloud API.
+  En local se crean evidencias en `data/outbox`; en produccion se activan SMTP o
+  Gmail API, Slack Incoming Webhook, Evolution API, un webhook WhatsApp/Kapso o
+  WhatsApp Cloud API.
 - SQLite persiste registros, puntajes, estado y rutas de constancias.
 - Los aprobados reciben una constancia PDF generada con ReportLab.
 

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import json
+import base64
 from email.message import EmailMessage
 from pathlib import Path
 import smtplib
+import urllib.parse
 import urllib.error
 import urllib.request
 
@@ -45,7 +47,7 @@ def _build_email_message(
     certificate_path: Path | None,
 ) -> EmailMessage:
     message = EmailMessage()
-    message["From"] = settings.smtp_from
+    message["From"] = settings.gmail_from if settings.gmail_refresh_token else settings.smtp_from
     message["To"] = recipient
     message["Subject"] = "Resultado de tu webinar de educacion financiera"
     message.set_content(_notification_text(name, summary, status, score, certificate_path))
@@ -68,6 +70,49 @@ def _post_json(url: str, payload: dict, headers: dict[str, str] | None = None) -
             raise urllib.error.HTTPError(url, response.status, "HTTP error", response.headers, None)
 
 
+def _google_access_token() -> str:
+    payload = urllib.parse.urlencode(
+        {
+            "client_id": settings.gmail_client_id,
+            "client_secret": settings.gmail_client_secret,
+            "refresh_token": settings.gmail_refresh_token,
+            "grant_type": "refresh_token",
+        }
+    ).encode("utf-8")
+    request = urllib.request.Request(
+        "https://oauth2.googleapis.com/token",
+        data=payload,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=20) as response:
+        body = json.loads(response.read().decode("utf-8"))
+    return body["access_token"]
+
+
+def _send_gmail_api(registration_id: str, recipient: str, message: EmailMessage) -> str:
+    try:
+        access_token = _google_access_token()
+        raw = base64.urlsafe_b64encode(message.as_bytes()).decode("ascii").rstrip("=")
+        request = urllib.request.Request(
+            "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
+            data=json.dumps({"raw": raw}).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(request, timeout=20) as response:
+            detail = response.read().decode("utf-8")
+        log_notification(registration_id, "email", recipient, "enviado", "Gmail API")
+        return f"email:gmail_api:enviado:{detail}"
+    except (KeyError, OSError, urllib.error.URLError, urllib.error.HTTPError) as exc:
+        output = _save_outbox(registration_id, "email_error", "eml", message.as_string())
+        log_notification(registration_id, "email", recipient, "error", str(exc))
+        return f"email:gmail_api:error:{output}"
+
+
 def _send_email(
     registration_id: str,
     recipient: str,
@@ -78,6 +123,9 @@ def _send_email(
     certificate_path: Path | None,
 ) -> str:
     message = _build_email_message(recipient, name, summary, status, score, certificate_path)
+
+    if settings.gmail_client_id and settings.gmail_client_secret and settings.gmail_refresh_token:
+        return _send_gmail_api(registration_id, recipient, message)
 
     if settings.smtp_enabled and settings.smtp_host:
         try:
@@ -159,6 +207,32 @@ def _send_whatsapp(
         "message": text,
         "channel": "whatsapp",
     }
+
+    if (
+        settings.evolution_api_url
+        and settings.evolution_api_key
+        and settings.evolution_instance
+        and destination
+    ):
+        evolution_payload = {
+            "number": destination.lstrip("+").replace(" ", ""),
+            "text": text,
+            "linkPreview": False,
+        }
+        url = f"{settings.evolution_api_url}/message/sendText/{settings.evolution_instance}"
+        try:
+            _post_json(url, evolution_payload, {"apikey": settings.evolution_api_key})
+            log_notification(registration_id, "whatsapp", destination, "enviado", "Evolution API")
+            return "whatsapp:evolution:enviado"
+        except (OSError, urllib.error.URLError, urllib.error.HTTPError) as exc:
+            output = _save_outbox(
+                registration_id,
+                "whatsapp_evolution_error",
+                "json",
+                json.dumps(evolution_payload, ensure_ascii=False, indent=2),
+            )
+            log_notification(registration_id, "whatsapp", destination, "error", str(exc))
+            return f"whatsapp:evolution:error:{output}"
 
     if settings.whatsapp_webhook_url and destination:
         try:

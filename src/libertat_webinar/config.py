@@ -32,9 +32,16 @@ class Settings:
     smtp_user: str
     smtp_password: str
     smtp_from: str
+    gmail_client_id: str
+    gmail_client_secret: str
+    gmail_refresh_token: str
+    gmail_from: str
     notification_channels: tuple[str, ...]
     slack_webhook_url: str
     whatsapp_webhook_url: str
+    evolution_api_url: str
+    evolution_api_key: str
+    evolution_instance: str
     whatsapp_graph_api_version: str
     whatsapp_phone_number_id: str
     whatsapp_access_token: str
@@ -55,9 +62,16 @@ class Settings:
             smtp_user=os.getenv("SMTP_USER", ""),
             smtp_password=os.getenv("SMTP_PASSWORD", ""),
             smtp_from=os.getenv("SMTP_FROM", "educacion@libertat.local"),
+            gmail_client_id=os.getenv("GMAIL_CLIENT_ID", ""),
+            gmail_client_secret=os.getenv("GMAIL_CLIENT_SECRET", ""),
+            gmail_refresh_token=os.getenv("GMAIL_REFRESH_TOKEN", ""),
+            gmail_from=os.getenv("GMAIL_FROM", os.getenv("SMTP_FROM", "educacion@libertat.local")),
             notification_channels=_as_list(os.getenv("NOTIFICATION_CHANNELS"), ("email",)),
             slack_webhook_url=os.getenv("SLACK_WEBHOOK_URL", ""),
             whatsapp_webhook_url=os.getenv("WHATSAPP_WEBHOOK_URL", ""),
+            evolution_api_url=os.getenv("EVOLUTION_API_URL", "").rstrip("/"),
+            evolution_api_key=os.getenv("EVOLUTION_API_KEY", ""),
+            evolution_instance=os.getenv("EVOLUTION_INSTANCE", ""),
             whatsapp_graph_api_version=os.getenv("WHATSAPP_GRAPH_API_VERSION", "v23.0"),
             whatsapp_phone_number_id=os.getenv("WHATSAPP_PHONE_NUMBER_ID", ""),
             whatsapp_access_token=os.getenv("WHATSAPP_ACCESS_TOKEN", ""),

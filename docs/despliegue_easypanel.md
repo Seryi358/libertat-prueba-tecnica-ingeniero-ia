@@ -70,9 +70,12 @@ https://n8n-n8n.zb12wf.easypanel.host/webhook/webinar-libertat
 La respuesta esperada contiene `id`, `estado` y `quiz_url`.
 
 Para activar envio real por email, configurar SMTP en Easypanel y cambiar
-`SMTP_ENABLED=true`. Para Slack, agregar `slack` en `NOTIFICATION_CHANNELS` y
-configurar `SLACK_WEBHOOK_URL`. Para WhatsApp, agregar `whatsapp` y configurar
-`WHATSAPP_WEBHOOK_URL` del proveedor o las variables de WhatsApp Cloud API:
+`SMTP_ENABLED=true`, o usar Gmail API con `GMAIL_CLIENT_ID`,
+`GMAIL_CLIENT_SECRET`, `GMAIL_REFRESH_TOKEN` y `GMAIL_FROM`. Para Slack,
+agregar `slack` en `NOTIFICATION_CHANNELS` y configurar `SLACK_WEBHOOK_URL`.
+Para WhatsApp, agregar `whatsapp` y configurar Evolution API con
+`EVOLUTION_API_URL`, `EVOLUTION_API_KEY` y `EVOLUTION_INSTANCE`; tambien se
+puede usar `WHATSAPP_WEBHOOK_URL` del proveedor o WhatsApp Cloud API con
 `WHATSAPP_GRAPH_API_VERSION`, `WHATSAPP_PHONE_NUMBER_ID` y
 `WHATSAPP_ACCESS_TOKEN`.
 
