@@ -56,13 +56,14 @@ Las evidencias visuales estan en `docs/evidencias/`:
 - `02_quiz.png`: resumen y quiz de 3 preguntas.
 - `03_resultado.png`: resultado aprobado y acceso a constancia.
 - `04_dashboard.png`: dashboard con historial de registros.
+- `05_supabase_sync.png`: verificacion de sincronizacion cloud con email y WhatsApp enviados.
 - `demo_funcionamiento.webm`: recorrido grabado del flujo completo.
 - `constancia_demo.pdf`: constancia generada para un usuario aprobado.
 
 Ademas, el despliegue quedo validado con envio real por Gmail API y Evolution API
 para WhatsApp, y el workflow `Libertat - Webinar educativo` esta activo en n8n.
-La base principal es SQLite persistente y se incluye esquema Supabase para
-replicacion cloud.
+La base principal es SQLite persistente y Supabase quedo activo como replica
+cloud para registros y notificaciones.
 
 ## Verificacion recomendada
 
@@ -73,9 +74,8 @@ python -m json.tool n8n/flujo_webinar_libertat.json >/dev/null
 python scripts/demo_run.py
 ```
 
-Para activar Supabase, ejecutar `docs/supabase_schema.sql` en el SQL Editor y
-configurar `SUPABASE_SYNC_ENABLED=true`, `SUPABASE_URL` y
-`SUPABASE_SERVICE_KEY`.
+Supabase queda documentado con `docs/supabase_schema.sql` y se activa con
+`SUPABASE_SYNC_ENABLED=true`, `SUPABASE_URL` y `SUPABASE_SERVICE_KEY`.
 
 Para validar notificaciones reales, configurar uno o mas canales:
 

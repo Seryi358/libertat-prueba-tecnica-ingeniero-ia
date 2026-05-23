@@ -268,6 +268,7 @@ Las capturas de funcionamiento se encuentran en `docs/evidencias/`:
 - `02_quiz.png`
 - `03_resultado.png`
 - `04_dashboard.png`
+- `05_supabase_sync.png`
 - `demo_funcionamiento.webm`
 - `constancia_demo.pdf`
 
