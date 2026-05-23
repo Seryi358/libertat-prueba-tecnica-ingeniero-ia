@@ -25,6 +25,7 @@ APP_ENV=production
 APP_BASE_URL=https://n8n-libertat-webinar.zb12wf.easypanel.host
 DATABASE_PATH=data/libertat_webinar.sqlite3
 OLLAMA_ENABLED=false
+NOTIFICATION_CHANNELS=email
 SMTP_ENABLED=false
 SMTP_FROM=educacion@libertat.local
 ```
@@ -60,12 +61,20 @@ https://n8n-n8n.zb12wf.easypanel.host/webhook/webinar-libertat
 {
   "nombre": "Sergio Alejandro Castellanos",
   "email": "scastellanos@phinodia.com",
+  "telefono": "+573001234567",
   "tema_webinar": "Manejo responsable del endeudamiento",
   "fecha_asistencia": "2026-05-22"
 }
 ```
 
 La respuesta esperada contiene `id`, `estado` y `quiz_url`.
+
+Para activar envio real por email, configurar SMTP en Easypanel y cambiar
+`SMTP_ENABLED=true`. Para Slack, agregar `slack` en `NOTIFICATION_CHANNELS` y
+configurar `SLACK_WEBHOOK_URL`. Para WhatsApp, agregar `whatsapp` y configurar
+`WHATSAPP_WEBHOOK_URL` del proveedor o las variables de WhatsApp Cloud API:
+`WHATSAPP_GRAPH_API_VERSION`, `WHATSAPP_PHONE_NUMBER_ID` y
+`WHATSAPP_ACCESS_TOKEN`.
 
 ## Verificacion post-despliegue
 

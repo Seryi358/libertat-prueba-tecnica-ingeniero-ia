@@ -12,6 +12,7 @@ def main() -> None:
             json={
                 "nombre": "Sergio Alejandro Castellanos",
                 "email": "scastellanos@phinodia.com",
+                "telefono": "+573001234567",
                 "tema_webinar": "Manejo responsable del endeudamiento",
                 "fecha_asistencia": "2026-05-22",
             },

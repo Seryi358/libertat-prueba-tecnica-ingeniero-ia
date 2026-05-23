@@ -52,12 +52,14 @@ def create_registration_from_form(
     email: str = Form(...),
     tema_webinar: str = Form(...),
     fecha_asistencia: str = Form(...),
+    telefono: str | None = Form(None),
 ) -> RedirectResponse:
     data = RegistrationInput(
         nombre=nombre,
         email=email,
         tema_webinar=tema_webinar,
         fecha_asistencia=fecha_asistencia,
+        telefono=telefono or None,
     )
     created = create_registration(data)
     return RedirectResponse(url=f"/quiz/{created['id']}", status_code=303)
@@ -136,6 +138,7 @@ def evaluate_registration(registration_id: str, payload: EvaluationInput) -> dic
         status=status,
         score=result.puntaje,
         certificate_path=certificate_path,
+        phone=row["telefono"] if "telefono" in row.keys() else None,
     )
     return {
         "registro_id": registration_id,

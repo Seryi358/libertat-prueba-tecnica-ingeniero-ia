@@ -35,6 +35,7 @@ def init_db() -> None:
                 id TEXT PRIMARY KEY,
                 nombre TEXT NOT NULL,
                 email TEXT NOT NULL,
+                telefono TEXT,
                 tema_webinar TEXT NOT NULL,
                 fecha_asistencia TEXT NOT NULL,
                 resumen TEXT NOT NULL,
@@ -47,6 +48,12 @@ def init_db() -> None:
             )
             """
         )
+        columns = {
+            row["name"]
+            for row in conn.execute("PRAGMA table_info(registros)").fetchall()
+        }
+        if "telefono" not in columns:
+            conn.execute("ALTER TABLE registros ADD COLUMN telefono TEXT")
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS notificaciones (
@@ -68,14 +75,15 @@ def create_registration(registration_id: str, data: RegistrationInput, content: 
         conn.execute(
             """
             INSERT INTO registros (
-                id, nombre, email, tema_webinar, fecha_asistencia, resumen, quiz_json,
+                id, nombre, email, telefono, tema_webinar, fecha_asistencia, resumen, quiz_json,
                 estado, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pendiente', ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', ?, ?)
             """,
             (
                 registration_id,
                 data.nombre,
                 data.email,
+                data.telefono,
                 data.tema_webinar,
                 data.fecha_asistencia.isoformat(),
                 content.resumen,

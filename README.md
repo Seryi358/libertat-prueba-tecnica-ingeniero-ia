@@ -9,7 +9,7 @@ notifica el resultado por email y emite una constancia PDF para usuarios aprobad
 - Trigger por formulario web o webhook REST.
 - Generacion de resumen y quiz de 3 preguntas segun el tema del webinar.
 - Evaluacion automatica con aprobacion cuando el puntaje es mayor a 70%.
-- Notificacion personalizada por email. En local se guarda una evidencia `.eml`.
+- Notificacion personalizada por email, Slack o WhatsApp segun variables de entorno.
 - Constancia PDF con nombre, fecha y puntaje para usuarios aprobados.
 - Dashboard con historial de registros y constancias.
 - Flujo n8n importable para orquestar el webhook.
@@ -72,6 +72,52 @@ codigo fuente.
 | `SMTP_HOST` / `SMTP_PORT` | Servidor SMTP |
 | `SMTP_USER` / `SMTP_PASSWORD` | Credenciales SMTP |
 | `SMTP_FROM` | Remitente |
+| `NOTIFICATION_CHANNELS` | Canales separados por coma: `email`, `slack`, `whatsapp` |
+| `SLACK_WEBHOOK_URL` | Incoming Webhook para Slack |
+| `WHATSAPP_WEBHOOK_URL` | Webhook de proveedor WhatsApp, por ejemplo Kapso |
+| `WHATSAPP_GRAPH_API_VERSION` | Version de Graph API para WhatsApp Cloud API |
+| `WHATSAPP_PHONE_NUMBER_ID` / `WHATSAPP_ACCESS_TOKEN` | Credenciales WhatsApp Cloud API |
+| `WHATSAPP_DEFAULT_TO` | Destino WhatsApp de prueba si el registro no trae telefono |
+
+## Notificaciones
+
+El canal minimo requerido por la prueba es uno de estos: email, WhatsApp o Slack.
+La aplicacion soporta los tres por configuracion. Por defecto usa email y, si no
+hay SMTP configurado, guarda una evidencia `.eml` en `data/outbox/` para que el
+flujo sea verificable sin credenciales. En produccion se activa SMTP real con:
+
+```env
+NOTIFICATION_CHANNELS=email
+SMTP_ENABLED=true
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=usuario
+SMTP_PASSWORD=clave
+SMTP_FROM=educacion@libertat.co
+```
+
+Para Slack:
+
+```env
+NOTIFICATION_CHANNELS=email,slack
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
+```
+
+Para WhatsApp con webhook de proveedor:
+
+```env
+NOTIFICATION_CHANNELS=email,whatsapp
+WHATSAPP_WEBHOOK_URL=https://proveedor.example.com/webhook
+```
+
+Para WhatsApp Cloud API:
+
+```env
+NOTIFICATION_CHANNELS=email,whatsapp
+WHATSAPP_GRAPH_API_VERSION=v23.0
+WHATSAPP_PHONE_NUMBER_ID=phone_number_id
+WHATSAPP_ACCESS_TOKEN=token
+```
 
 ## n8n
 
@@ -91,6 +137,7 @@ Payload esperado:
 {
   "nombre": "Sergio Alejandro Castellanos",
   "email": "scastellanos@phinodia.com",
+  "telefono": "+573001234567",
   "tema_webinar": "Manejo responsable del endeudamiento",
   "fecha_asistencia": "2026-05-22"
 }
@@ -139,3 +186,8 @@ La seccion escrita esta respondida en `docs/PruebaTecnica_IngenieroIA_Libertat_r
 ## Decisiones tecnicas
 
 Ver `docs/decisiones_tecnicas.md`.
+
+## Cumplimiento de la prueba
+
+La matriz punto a punto contra el PDF de instrucciones esta en
+`docs/cumplimiento_pdf.md`.

@@ -14,8 +14,9 @@ operativo y trazabilidad tecnica.
 - El generador de contenido usa un modelo de lenguaje local mediante Ollama cuando
   esta configurado. En modo demo usa un generador deterministico para permitir pruebas
   sin credenciales.
-- El resultado se notifica por email. En local se crea un archivo `.eml`; en produccion
-  se activa SMTP con variables de entorno.
+- El resultado se notifica por los canales configurados: email, Slack y/o WhatsApp.
+  En local se crean evidencias en `data/outbox`; en produccion se activan SMTP,
+  Slack Incoming Webhook, un webhook WhatsApp/Kapso o WhatsApp Cloud API.
 - SQLite persiste registros, puntajes, estado y rutas de constancias.
 - Los aprobados reciben una constancia PDF generada con ReportLab.
 
@@ -24,7 +25,7 @@ operativo y trazabilidad tecnica.
 - Ninguna credencial queda en el codigo fuente.
 - Las variables sensibles viven en `.env`, excluido por `.gitignore`.
 - El webhook no guarda secretos en logs.
-- El canal SMTP se puede activar por entorno sin cambiar el codigo.
+- Los canales de comunicacion se activan por entorno sin cambiar el codigo.
 - La persistencia local se concentra en `data/`, carpeta excluida para artefactos
   operativos.
 

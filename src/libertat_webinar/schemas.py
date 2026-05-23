@@ -11,6 +11,7 @@ class RegistrationInput(BaseModel):
     email: EmailStr
     tema_webinar: str = Field(..., min_length=4, max_length=160)
     fecha_asistencia: date
+    telefono: str | None = Field(default=None, max_length=40)
 
 
 class QuizQuestion(BaseModel):
