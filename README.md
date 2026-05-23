@@ -106,7 +106,19 @@ Tambien puede enviarse por Gmail API. Primero se obtiene la URL de autorizacion:
 GMAIL_CLIENT_ID=... python scripts/gmail_oauth_setup.py url
 ```
 
-Despues de autorizar, intercambiar el codigo recibido:
+Tambien se puede iniciar un servidor local que espera el callback OAuth:
+
+```bash
+GMAIL_CLIENT_ID=... GMAIL_CLIENT_SECRET=... python scripts/gmail_oauth_setup.py listen
+```
+
+El redirect URI que debe existir en Google Cloud Console es:
+
+```text
+http://127.0.0.1:8765/oauth2callback
+```
+
+Si se prefiere intercambiar manualmente el codigo recibido:
 
 ```bash
 GMAIL_CLIENT_ID=... GMAIL_CLIENT_SECRET=... GMAIL_AUTH_CODE=... python scripts/gmail_oauth_setup.py exchange
